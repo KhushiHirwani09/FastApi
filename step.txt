@@ -1,0 +1,97 @@
+using fastapi with alembic (login and register)
+
+1.create a virtual environment and activate it --
+	-python3 venv -m venv
+	-source venv/bin/activate
+2.install different packages
+	-pip install sqlalchemy alembic uvicorn psycopg2
+3.installing alembic and initializing it
+	alembic init alembic
+4.create databse in postgresql and granting permission
+	-sudo -u postgres psql(using postgresql)
+	-CREATE DATABASE DBNAME;(creating databse)
+	-CREATE USER admin WITH password 'root';(creating user with password)
+	-GRANT ALL PRIVILEGES ON DATABASE dbname to user;(granting only the permission of 		creating connection and objects)
+	 OR GRANT ALL PRIVILEGES ON SCHEMA PUBLIC TO user;(let the user create tables,sequence etc.)
+5.install fastapi
+	-pip install fastapi;
+6.alembic.ini url--
+	-sqlalchemy.url = postgresql://cadmin:root@localhost:5432/CRUD
+	
+
+#if server is occupied then ----
+ ✅ Step 1: Find What Is Using Port 8000
+
+Run:
+
+lsof -i :8000
+
+
+You’ll see something like:
+
+python   12345   user   ...   TCP *:8000 (LISTEN)
+
+
+The number (e.g., 12345) is the PID.
+
+✅ Step 2: Kill That Process
+kill 12345
+
+
+If it doesn’t stop:
+
+kill -9 12345
+
+🚀 Quick Shortcut (Easiest Way)
+
+Just run:
+
+pkill -f uvicorn
+
+
+Then start again:
+
+uvicorn main:app --reload
+
+------------------------------------------------------------------
+#connecting to database and displaying data from the table-----
+------------------------------------------------------------------
+1 sudo -u postgres psql;
+2.\l -for listing databases
+3.connect to database--\c databaseanme;
+4.\dt-displaying the tables of the databses
+5.\d tablename-describing the structure of the table
+6.SELECT * FROM users;
+
+#db: Session = Depends(get_db) (Dependency Injection) 
+1.Automatic Management: Instead of manually opening a database connection, handling errors, and closing it for every request, Depends(get_db) tells FastAPI to execute a get_db function before running the register logic.
+2.Yielding Sessions: The get_db function likely uses yield to provide a database session. This ensures the database connection is automatically closed (or returned to the pool) after the request is finished, even if errors occur.
+3.Scalability: It ensures database connections are not leaked, which prevents "connection limit exceeded" errors and improves application performance. 
+
+
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+DATABASE_URL="postgresql://cadmin:root@localhost:5432/CRUD"
+engine=create_engine(DATABASE_URL)
+sessionlocal=sessionmaker(autoflush=False,autocommit=False,bind=engine)
+
+Base=declarative_base()
+
+
+from database import Base
+from sqlalchemy import Column,Integer,String
+
+class User(Base):
+    __tablename__="users"
+    username=Column(String,nullable=False)
+    age=Column(String)
+    phoneno=Column(String,nullable=False)
+    id=Column(String,unique=True,nullable=False)
+    department=Column(String,nullable=False)
+
+
+
+
