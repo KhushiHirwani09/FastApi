@@ -13,6 +13,10 @@ def get_db():
         yield db
     finally:
         db.close()
+        
+@app.get("/")
+def root():
+    return {"message": "Hello Render"}
 
 @app.post("/createuser")
 def create_user(username:str,age:int,id:int,department:str,phoneno:str,db:Session=Depends(get_db)):
