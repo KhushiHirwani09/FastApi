@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:18
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  api:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    # environment:
+    #   DATABASE_URL: postgresql://cadmin:root@host.docker.internal:5432/crud
+    volumes:
+      - .:/app
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    #maps it to your host machine.
+volumes:
+  db-data:
